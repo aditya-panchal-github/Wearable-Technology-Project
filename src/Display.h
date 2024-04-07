@@ -7,5 +7,6 @@ extern LiquidCrystal lcd;
 
 void setupDisplay();
 void displayData(const SensorData& data);
+void displayData2(const SensorData& data);
 
 #endif // DISPLAY_H

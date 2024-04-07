@@ -3,14 +3,15 @@
 #include <Arduino.h>
 
 // Made this struct to store the sensor data
-struct SensorData {
+struct SensorData 
+{
   unsigned long timestamp;
   int heartRate;
   float temperature;
   int soundLevel;
   int vibration;
   int rawHeartRateSignal; // Added this line just in case it's needed
+  int tiltStatus;
 };
-
 
 #endif // SENSOR_DATA_H

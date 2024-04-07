@@ -1,5 +1,5 @@
 {
-  "idf.port": "/dev/cu.usbmodem11101",
+  "idf.port": "/dev/cu.usbmodem1101",
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",
   "C_Cpp_Runner.cppCompilerPath": "clang++",

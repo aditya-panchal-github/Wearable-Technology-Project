@@ -18,53 +18,85 @@ public:
 // and returned as SensorData objects
 
 // NOTE: Could still use some work, but it's functional
-class HeartRateSensor : public Sensor {
+class HeartRateSensor : public Sensor 
+{
 public:
   PulseSensorPlayground pulseSensor;
   unsigned long lastHeartRateReadTime = 0;
   int lastHeartRate = 0;
+  int threshold = 550;  // Default threshold, adapt as needed
 
-  HeartRateSensor(int pin) : Sensor(pin) {
+  HeartRateSensor(int pin) : Sensor(pin) 
+  {
     pulseSensor.analogInput(pin);
     pulseSensor.blinkOnPulse(13);
-    pulseSensor.setThreshold(750);
+    pulseSensor.setThreshold(threshold);
     pulseSensor.begin();
+
   }
 
-  SensorData read() override {
+  SensorData read() override 
+  {
     SensorData data;
-    if (millis() - lastHeartRateReadTime >= 1000) {
-      if (pulseSensor.sawStartOfBeat()) {
-        lastHeartRate = pulseSensor.getBeatsPerMinute();
-        lastHeartRateReadTime = millis();
-      }
-      data.heartRate = lastHeartRate;
+
+    if (pulseSensor.sawStartOfBeat()) {
+      lastHeartRate = pulseSensor.getBeatsPerMinute();
+      adjustThreshold();  // Adjust threshold based on signal amplitude
     }
+
+    data.heartRate = lastHeartRate;
     return data;
+    
   }
+
+private:
+  void adjustThreshold() 
+  {
+    // Simple example: adjust threshold based on pulse amplitude
+    int amplitude = pulseSensor.getPulseAmplitude();
+    threshold = amplitude / 2 + 100;  // Adjust as needed
+    pulseSensor.setThreshold(threshold);
+  }
+
 };
+
 
 // NOTE: Not finished, still working on this 
 class VibrationSensor : public Sensor {
+
 public:
+
   VibrationSensor(int pin) : Sensor(pin) {}
-  SensorData read() override {
+
+  SensorData read() override 
+  {
+
     SensorData data;
+    bool isVibrating = digitalRead(pin);
+    data.vibration = isVibrating;
+
     return data;
   }
+  
 };
 
 
 // NOTE: Functional, but has to be tested with a reference sensor to calibrate
-class TemperatureSensor : public Sensor {
+class TemperatureSensor : public Sensor 
+{
 public:
   TemperatureSensor(int pin) : Sensor(pin) {}
-  SensorData read() override {
+
+  SensorData read() override 
+  {
+
     SensorData data;
     int reading = analogRead(pin);
     float voltage = reading * 5.0 / 1024.0;
     data.temperature = (voltage - 0.5) * 100;
+
     return data;
+
   }
 };
 
@@ -74,22 +106,16 @@ class SoundLevelSensor : public Sensor {
 public:
   SoundLevelSensor(int pin) : Sensor(pin) {}
 
-  SensorData read() override {
+  SensorData read() override 
+  {
     SensorData data;
 
-    int average;
-    int numReadings = 10;
-    int sum = 0;
-    for (int i = 0; i < numReadings; i++) {
-      sum += analogRead(pin);
-      delay(10); // Short delay between readings
-    }
-    int average = sum / numReadings;
+    int Readings = analogRead(pin);
 
     // This calculation is to Convert the average value to dB using the formula
-    float dB = 20 * log10(average);
-    float calibrationFactor = 1.0; // Still need to fine tune this
-    data.soundLevel = dB * calibrationFactor;
+    float dB = 20 * log10(Readings);
+    float calibrationFactor = 20.0; // Still need to fine tune this
+    data.soundLevel = dB + calibrationFactor;
 
     return data;
   }
